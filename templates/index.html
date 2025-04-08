@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition Attendance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        select, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        #video-container {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Face Recognition Attendance System</h1>
+
+    <label for="subject">Select Subject:</label>
+    <select id="subject">
+        <option value="" selected disabled>-- Choose Subject --</option>
+        {% for subject in subjects %}
+            <option value="{{ subject }}">{{ subject }}</option>
+        {% endfor %}
+    </select>
+
+    <button onclick="setSubject()">Confirm Subject</button>
+
+    <p id="message"></p>
+
+    <div id="video-container">
+        <h2>Live Video Feed</h2>
+        <img id="video_feed" src="" width="640px">
+    </div>
+
+    <script>
+        function setSubject() {
+            let selectedSubject = document.getElementById("subject").value;
+
+            if (!selectedSubject) {
+                alert("Please select a subject.");
+                return;
+            }
+
+            fetch('/select_subject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'subject=' + encodeURIComponent(selectedSubject)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("message").innerText = data.message;
+                document.getElementById("video-container").style.display = "block";
+                document.getElementById("video_feed").src = "/video_feed";
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+
+</body>
+</html>
